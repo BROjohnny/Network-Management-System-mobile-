@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "581908773342",
+    "firebase_url": "https://network-management-syste-a1108.firebaseio.com",
+    "project_id": "network-management-syste-a1108",
+    "storage_bucket": "network-management-syste-a1108.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:581908773342:android:45e969d2fe63d5a3be454f",
+        "android_client_info": {
+          "package_name": "com.master.networkmanagementsystem"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "581908773342-448etg6om7ctjulkemi7rsd5jmbmulii.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.master.networkmanagementsystem",
+            "certificate_hash": "d55c3b816d8fcfe534435997dcb8109e5bb9d8bb"
+          }
+        },
+        {
+          "client_id": "581908773342-iuonqi3q9eafb2kkjjall8dtvlp7jup1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHO6f9GVYodnrhtIeEG3W6ZBC4hoWcop8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "581908773342-iuonqi3q9eafb2kkjjall8dtvlp7jup1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
