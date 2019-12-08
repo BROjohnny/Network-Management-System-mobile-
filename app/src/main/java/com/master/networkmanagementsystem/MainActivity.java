@@ -15,12 +15,14 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
     EditText email,password;
     Button register;
     TextView warn;
     FirebaseAuth mFirebaseAuth;
+    private FirebaseAuth.AuthStateListener mAuthStateListener;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +33,21 @@ public class MainActivity extends AppCompatActivity {
         password = findViewById(R.id.password);
         register = findViewById(R.id.register);
         warn = findViewById(R.id.warn);
+
+        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser mFirebaseUser = mFirebaseAuth.getCurrentUser();
+                if (mFirebaseUser != null){
+                    Toast.makeText(MainActivity.this,"You are logged in",Toast.LENGTH_SHORT).show();
+                    Intent i = new Intent(MainActivity.this,HomeActivity.class);
+                    startActivity(i);
+                }
+                else {
+                    Toast.makeText(MainActivity.this,"Please login",Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -48,16 +65,17 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this,"Fields are empty!",Toast.LENGTH_SHORT).show();
                 }
                 else if (!(pwd.isEmpty() && emil.isEmpty())){
-                    mFirebaseAuth.createUserWithEmailAndPassword(emil,pwd).addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
+                    mFirebaseAuth.signInWithEmailAndPassword(emil,pwd).addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (!task.isSuccessful()){
-                                Toast.makeText(MainActivity.this,"Register Unsuccessful! Please Try Again",Toast.LENGTH_SHORT).show();
-
+                                Toast.makeText(MainActivity.this,"Login Error,Please Try Again",Toast.LENGTH_SHORT).show();
                             }
                             else {
-                                startActivity(new Intent(MainActivity.this,HomeActivity.class));
-                            }                        }
+                                Intent gohome = new Intent(MainActivity.this,HomeActivity.class);
+                                startActivity(gohome);
+                            }
+                        }
                     });
                 }
                 else {
@@ -65,13 +83,17 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
         warn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this,LoginActivity.class);
-                startActivity(i);
+                Intent j = new Intent(MainActivity.this,LoginActivity.class);
+                startActivity(j);
             }
         });
+    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mFirebaseAuth.addAuthStateListener(mAuthStateListener);
     }
 }
