@@ -17,7 +17,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class RegisterActivity extends AppCompatActivity {
-    EditText email,password;
+    EditText email,password,name,id;
     Button register;
     TextView warn2;
     FirebaseAuth mFirebaseAuth;
@@ -32,12 +32,16 @@ public class RegisterActivity extends AppCompatActivity {
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
         register = findViewById(R.id.register);
+        name = findViewById(R.id.username);
+        id = findViewById(R.id.id);
         warn2 = findViewById(R.id.warn);
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String emil = email.getText().toString();
-                String pwd = password.getText().toString();
+                String pwd = password.getText().toString().trim();
+                String usr = name.getText().toString();
+                String workid = id.getText().toString();
                 if(emil.isEmpty()){
                     email.setError("Please enter email!");
                     email.requestFocus();
@@ -45,6 +49,14 @@ public class RegisterActivity extends AppCompatActivity {
                 else if (pwd.isEmpty()){
                     password.setError("Please enter password");
                     password.requestFocus();
+                }
+                if(usr.isEmpty()){
+                    name.setError("Please enter user name!");
+                    name.requestFocus();
+                }
+                if(workid.isEmpty()){
+                    id.setError("Please enter valid company ID!");
+                    id.requestFocus();
                 }
                 else if (pwd.isEmpty() && emil.isEmpty()){
                     Toast.makeText(RegisterActivity.this,"Fields are empty!",Toast.LENGTH_SHORT).show();
