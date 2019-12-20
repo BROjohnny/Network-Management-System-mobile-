@@ -1,27 +1,31 @@
 package com.master.networkmanagementsystem;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.Manifest;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode;
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetector;
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetectorOptions;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata;
 import com.karumi.dexter.Dexter;
+import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.single.PermissionListener;
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.otaliastudios.cameraview.CameraView;
 import com.otaliastudios.cameraview.frame.Frame;
 import com.otaliastudios.cameraview.frame.FrameProcessor;
@@ -43,23 +47,18 @@ public class QrScanActivity extends AppCompatActivity {
         setContentView(R.layout.activity_qr_scan);
 
         Dexter.withActivity(this)
-                .withPermission(Manifest.permission.CAMERA)
-                .withListener(new PermissionListener() {
+                .withPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO})
+                .withListener(new MultiplePermissionsListener() {
                     @Override
-                    public void onPermissionGranted(PermissionGrantedResponse response) {
+                    public void onPermissionsChecked(MultiplePermissionsReport report) {
                         setupcamera();
                     }
 
                     @Override
-                    public void onPermissionDenied(PermissionDeniedResponse response) {
-                        Toast.makeText(QrScanActivity.this, "You must accept permission",Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
+                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
 
                     }
-                }).check();
+                });
     }
     private void setupcamera(){
         scan = findViewById(R.id.scan);
@@ -79,12 +78,12 @@ public class QrScanActivity extends AppCompatActivity {
                 processImage(getVisionImageFromFrame(frame));
             }
         });
-    }
 
-    private void processResult(List<FirebaseVisionBarcode> firebaseVisionBarcodes){
-        if (FirebaseVisionBarcodes.size() > 0){
-            isDetected = true;
-        }
+        options = new FirebaseVisionBarcodeDetectorOptions.Builder()
+                .setBarcodeFormats(FirebaseVisionBarcode.FORMAT_QR_CODE)
+                .build();
+        detector = FirebaseVision.getInstance().getVisionBarcodeDetector(options);
+
     }
 
     private void processImage(FirebaseVisionImage image){
@@ -114,5 +113,54 @@ public class QrScanActivity extends AppCompatActivity {
                 .setRotation(frame.getRotation())
                 .build();
         return FirebaseVisionImage.fromByteArray(data,metadata);
+    }
+
+
+    private void processResult(List<FirebaseVisionBarcode> firebaseVisionBarcodes){
+        if (firebaseVisionBarcodes.size() > 0){
+            isDetected = true;
+            scan.setEnabled(isDetected);
+            for (FirebaseVisionBarcode item: firebaseVisionBarcodes){
+                int value_type = item.getValueType();
+                switch (value_type){
+                    case FirebaseVisionBarcode.TYPE_TEXT:{
+                        onCreateDialog(item.getRawValue());
+                    }
+                    break;
+                    case FirebaseVisionBarcode.TYPE_URL:{
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.getRawValue()));
+                        startActivity(intent);
+                    }
+                    break;
+                    case FirebaseVisionBarcode.TYPE_CONTACT_INFO:{
+                        String info = new StringBuilder("Model Name:")
+                                .append(item.getContactInfo().getName().getFormattedName())
+                                .append("\n")
+                                .append("MAC Address: ")
+                                .append(item.getContactInfo().getAddresses().get(0).getAddressLines())
+                                .append("\n")
+                                .append("MAC Address: ")
+                                .append(item.getContactInfo().getEmails().get(0).getAddress())
+                                .toString();
+                        onCreateDialog(info);
+                    }
+                    break;
+                    default: break;
+                }
+            }
+        }
+    }
+
+    private void onCreateDialog(String text) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(text)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 }
