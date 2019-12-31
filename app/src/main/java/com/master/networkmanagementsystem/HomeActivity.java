@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class HomeActivity extends AppCompatActivity {
-    Button logout,qr;
+    Button logout,qr,terminal;
     FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     @Override
@@ -20,6 +20,7 @@ public class HomeActivity extends AppCompatActivity {
 
         logout = findViewById(R.id.logout);
         qr = findViewById(R.id.qr);
+        terminal = findViewById(R.id.terminal);
 
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -35,6 +36,14 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent q = new Intent(HomeActivity.this, QrActivity.class);
                 startActivity(q);
+            }
+        });
+
+        terminal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent t = getPackageManager().getLaunchIntentForPackage("com.termius");
+                startActivity(t);
             }
         });
 
