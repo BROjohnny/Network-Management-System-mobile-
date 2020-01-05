@@ -1,6 +1,7 @@
 package com.master.networkmanagementsystem;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -10,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class HomeActivity extends AppCompatActivity {
-    Button logout,qr,terminal;
+    Button logout,qr,terminal,embtn;
     FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     @Override
@@ -21,6 +22,7 @@ public class HomeActivity extends AppCompatActivity {
         logout = findViewById(R.id.logout);
         qr = findViewById(R.id.qr);
         terminal = findViewById(R.id.terminal);
+        embtn = findViewById(R.id.embtn);
 
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -44,6 +46,15 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent t = getPackageManager().getLaunchIntentForPackage("com.termius");
                 startActivity(t);
+            }
+        });
+
+        embtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri number = Uri.parse("tel:0112052117");
+                Intent e = new Intent(Intent.ACTION_DIAL,number);
+                startActivity(e);
             }
         });
 
