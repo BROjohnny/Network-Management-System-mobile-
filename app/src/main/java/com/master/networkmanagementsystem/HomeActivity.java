@@ -44,7 +44,7 @@ public class HomeActivity extends AppCompatActivity {
         terminal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent t = getPackageManager().getLaunchIntentForPackage("com.termius");
+                Intent t = getPackageManager().getLaunchIntentForPackage("com.server.auditor.ssh.client");
                 startActivity(t);
             }
         });
