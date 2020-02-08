@@ -70,18 +70,6 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        dref = FirebaseDatabase.getInstance().getReference();
-        dref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                status = dataSnapshot.child("Humidity").getValue().toString();
-                Humidity.setText(status);
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
     }
 }
