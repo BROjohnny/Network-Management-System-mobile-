@@ -3,17 +3,26 @@ package com.master.networkmanagementsystem;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class HomeActivity extends AppCompatActivity {
     Button logout,qr,terminal,embtn;
     FirebaseAuth mFirebaseAuth;
+    TextView Humidity,temp;
+    DatabaseReference dref;
+    String status;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +33,8 @@ public class HomeActivity extends AppCompatActivity {
         qr = findViewById(R.id.qr);
         terminal = findViewById(R.id.terminal);
         embtn = findViewById(R.id.embtn);
+        Humidity = findViewById(R.id.humid);
+        temp = findViewById(R.id.tempdata);
 
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,6 +70,18 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+        dref = FirebaseDatabase.getInstance().getReference();
+        dref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                status = dataSnapshot.child("Humidity").getValue().toString();
+                Humidity.setText(status);
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }
