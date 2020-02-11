@@ -94,8 +94,8 @@ void loop() {
     Serial.print(F("Temperature: "));
     Serial.print(event.temperature);
     Serial.println(F("°C"));
-    Firebase.setDouble(firebaseData, "/Temperature/Value", event.temperature);
-    Firebase.set(firebaseData, "/Temperature/Time", formattedDate);
+    Firebase.setDouble(firebaseData, "/Temperature", event.temperature);
+    //Firebase.set(firebaseData, "/Temperature/Time", formattedDate);
   }
 
   dht.humidity().getEvent(&event);
@@ -107,7 +107,7 @@ void loop() {
     Serial.print(F("Humidity: "));
     Serial.print(event.relative_humidity);
     Serial.println(F("%"));
-    Firebase.setDouble(firebaseData, "/Humidity/Value", event.relative_humidity);
-    Firebase.set(firebaseData, "/Humidity/Time", formattedDate);
+    Firebase.setDouble(firebaseData, "/Humidity", event.relative_humidity);
+    //Firebase.set(firebaseData, "/Humidity/Time", formattedDate);
   }
 }

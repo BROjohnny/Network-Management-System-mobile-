@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,7 +21,7 @@ import com.google.firebase.database.ValueEventListener;
 public class HomeActivity extends AppCompatActivity {
     Button logout,qr,terminal,embtn;
     FirebaseAuth mFirebaseAuth;
-    TextView Humidity,temp;
+    TextView Humid,temp;
     DatabaseReference dref;
     String status;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
@@ -33,7 +34,7 @@ public class HomeActivity extends AppCompatActivity {
         qr = findViewById(R.id.qr);
         terminal = findViewById(R.id.terminal);
         embtn = findViewById(R.id.embtn);
-        Humidity = findViewById(R.id.humid);
+        Humid = findViewById(R.id.humid);
         temp = findViewById(R.id.tempdata);
 
         logout.setOnClickListener(new View.OnClickListener() {
@@ -70,17 +71,36 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+
         dref = FirebaseDatabase.getInstance().getReference();
         dref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 status = dataSnapshot.child("Humidity").getValue().toString();
-                Humidity.setText(status);
+                Humid.setText(status);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+                Humid.setText("not done");
+                String[] para = Humid.getText().toString().split("\\s+");
+                Toast.makeText(HomeActivity.this, "" + para.length, Toast.LENGTH_LONG).show();
+            }
+        });
 
+        dref = FirebaseDatabase.getInstance().getReference();
+        dref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                status = dataSnapshot.child("Temperature").getValue().toString();
+                temp.setText(status);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                temp.setText("not done");
+                String[] para = temp.getText().toString().split("\\s+");
+                Toast.makeText(HomeActivity.this, "" + para.length, Toast.LENGTH_LONG).show();
             }
         });
     }
