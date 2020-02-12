@@ -39,9 +39,19 @@ void printResult(FirebaseData &data);
 uint32_t delayMS;
 
 void setup() {
+  pinMode (5,OUTPUT);
   Serial.begin(9600);
 
-  //wifi conectivity
+  //teperature and humidity sensor
+  dht.begin();
+  sensor_t sensor;
+  dht.temperature().getSensor(&sensor);
+  dht.humidity().getSensor(&sensor);
+
+  //delayMS = sensor.min_delay/1000000*60000;
+  delayMS = sensor.min_delay/1000;
+
+    //wifi conectivity
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   Serial.print("Connecting to Wi-Fi");
   while (WiFi.status() != WL_CONNECTED)
@@ -61,14 +71,7 @@ void setup() {
   Firebase.reconnectWiFi(true);
   Firebase.setReadTimeout(firebaseData, 1000 * 60);
 
-  //teperature and humidity sensor
-  dht.begin();
-  sensor_t sensor;
-  dht.temperature().getSensor(&sensor);
-  dht.humidity().getSensor(&sensor);
-
-  //delayMS = sensor.min_delay/1000000*60000;
-  delayMS = sensor.min_delay/1000;
+  Firebase.setInt(firebaseData,"LED_STATUS",0);
 }
 
 void loop() {
@@ -110,4 +113,22 @@ void loop() {
     Firebase.setDouble(firebaseData, "/Humidity", event.relative_humidity);
     //Firebase.set(firebaseData, "/Humidity/Time", formattedDate);
   }
+  LED();
 }
+int n;
+void LED(){
+  
+  Firebase.getInt(firebaseData,"LED_STATUS",n);
+  if(n==0){
+    digitalWrite(5,LOW);
+    Serial.println(n);
+    }
+  else if(n==1){
+    digitalWrite(5,HIGH);
+    Serial.println(n);
+    }
+  else{
+    digitalWrite(5,LOW);
+    Serial.println("error lightning");
+    }
+  }
