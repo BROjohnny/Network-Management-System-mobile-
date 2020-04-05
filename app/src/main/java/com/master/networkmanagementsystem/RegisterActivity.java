@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,14 +21,15 @@ public class RegisterActivity extends AppCompatActivity {
     EditText email,password,name,id;
     Button register;
     TextView warn2;
+    ProgressBar regprogressbar;
     FirebaseAuth mFirebaseAuth;
+
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-         //end
         mFirebaseAuth = FirebaseAuth.getInstance();
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
@@ -35,6 +37,9 @@ public class RegisterActivity extends AppCompatActivity {
         name = findViewById(R.id.username);
         id = findViewById(R.id.id);
         warn2 = findViewById(R.id.warn);
+        regprogressbar = findViewById(R.id.progressBar3);
+
+        inProgress(false);
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -62,15 +67,17 @@ public class RegisterActivity extends AppCompatActivity {
                     Toast.makeText(RegisterActivity.this,"Fields are empty!",Toast.LENGTH_SHORT).show();
                 }
                 else if (!(pwd.isEmpty() && emil.isEmpty())){
+                    inProgress(true);
                     mFirebaseAuth.createUserWithEmailAndPassword(emil,pwd).addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (!task.isSuccessful()){
                                 Toast.makeText(RegisterActivity.this,"Register Unsuccessful! Please Try Again",Toast.LENGTH_SHORT).show();
-
+                                startActivity(new Intent(RegisterActivity.this,RegisterActivity.class));
                             }
                             else {
-                                startActivity(new Intent(RegisterActivity.this,HomeActivity.class));
+                                Intent j =new Intent(RegisterActivity.this,MainActivity.class);
+                                startActivity(j);
                             }
                         }
                     });
@@ -88,6 +95,19 @@ public class RegisterActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+    }
+
+    private void inProgress(boolean x){
+        if (x){
+            regprogressbar.setVisibility(View.VISIBLE);
+            register.setEnabled(false);
+            warn2.setEnabled(false);
+        }
+        else {
+            regprogressbar.setVisibility(View.INVISIBLE);
+            register.setEnabled(true);
+            warn2.setEnabled(true);
+        }
     }
 
 

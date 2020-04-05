@@ -24,7 +24,11 @@ public class HomeActivity extends AppCompatActivity {
     TextView Humid,temp;
     DatabaseReference dref;
     String status;
+    private long backPressedTime;
+    private Toast backToast;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,7 +61,7 @@ public class HomeActivity extends AppCompatActivity {
         terminal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent t = getPackageManager().getLaunchIntentForPackage("com.server.auditor.ssh.client                                                     ");
+                Intent t = getPackageManager().getLaunchIntentForPackage("com.termux");//com.server.auditor.ssh.client
                 startActivity(t);
             }
         });
@@ -104,4 +108,19 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
     }
+//NEED TO FIX THIS
+    @Override
+    public void onBackPressed() {
+
+        if (backPressedTime + 2000 > System.currentTimeMillis()){
+            super.onBackPressed();
+            return;
+        }
+        else {
+            backToast = Toast.makeText(getBaseContext(),"Press back again to exit",Toast.LENGTH_SHORT);
+            backToast.show();
+        }
+        backPressedTime = System.currentTimeMillis();
+    }
+    //THIS IS END OF FIX AREA
 }

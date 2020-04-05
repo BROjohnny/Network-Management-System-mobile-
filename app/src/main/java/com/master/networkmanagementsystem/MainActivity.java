@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     EditText email,password;
     Button register;
     TextView warn;
+    ProgressBar progressbar;
     FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     @Override
@@ -33,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
         password = findViewById(R.id.password);
         register = findViewById(R.id.register);
         warn = findViewById(R.id.warn);
+        progressbar = findViewById(R.id.progressBar);
 
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -44,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(i);
                 }
                 else {
+                    inProgress(false);
                     Toast.makeText(MainActivity.this,"Please login",Toast.LENGTH_SHORT).show();
                 }
             }
@@ -61,19 +65,22 @@ public class MainActivity extends AppCompatActivity {
                     password.setError("Please enter password");
                     password.requestFocus();
                 }
-                else if (pwd.isEmpty() && emil.isEmpty()){
-                    Toast.makeText(MainActivity.this,"Fields are empty!",Toast.LENGTH_SHORT).show();
-                }
+//                else if (pwd.isEmpty() && emil.isEmpty()){
+//                    Toast.makeText(MainActivity.this,"Fields are empty!",Toast.LENGTH_SHORT).show();
+//                }
                 else if (!(pwd.isEmpty() && emil.isEmpty())){
+                    inProgress(true);
                     mFirebaseAuth.signInWithEmailAndPassword(emil,pwd).addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (!task.isSuccessful()){
-                                Toast.makeText(MainActivity.this,"Login Error,Please Try Again",Toast.LENGTH_SHORT).show();
+                                Toast.makeText(MainActivity.this,"Login Error,Check Email/Password",Toast.LENGTH_SHORT).show();
                             }
                             else {
                                 Intent gohome = new Intent(MainActivity.this,HomeActivity.class);
+                                gohome.addFlags(gohome.FLAG_ACTIVITY_CLEAR_TOP);
                                 startActivity(gohome);
+                                finish();return;
                             }
                         }
                     });
@@ -95,5 +102,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
+    }
+
+    private void inProgress(boolean x){
+        if (x){
+            progressbar.setVisibility(View.VISIBLE);
+            register.setEnabled(false);
+            warn.setEnabled(false);
+        }
+        else {
+            progressbar.setVisibility(View.INVISIBLE);
+            register.setEnabled(true);
+            warn.setEnabled(true);
+        }
     }
 }
