@@ -5,6 +5,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,7 +21,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class HomeActivity extends AppCompatActivity {
-    Button logout,qr,terminal,embtn;
+    Button logout,qr,terminal,embtn,findbtn;
     FirebaseAuth mFirebaseAuth;
     TextView Humid,temp;
     DatabaseReference dref;
@@ -40,6 +42,7 @@ public class HomeActivity extends AppCompatActivity {
         embtn = findViewById(R.id.embtn);
         Humid = findViewById(R.id.humid);
         temp = findViewById(R.id.tempdata);
+        findbtn = findViewById(R.id.find);
 
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,6 +58,14 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent q = new Intent(HomeActivity.this, QrActivity.class);
                 startActivity(q);
+            }
+        });
+
+        findbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent f = new Intent(HomeActivity.this, DeviceHomeActivity.class);
+                startActivity(f);
             }
         });
 
@@ -112,7 +123,7 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        if (backPressedTime + 2000 > System.currentTimeMillis()){
+        if (backPressedTime + 10000 > System.currentTimeMillis()){
             super.onBackPressed();
             return;
         }
