@@ -72,10 +72,13 @@ public class RegisterActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (!task.isSuccessful()){
+                                //finish();
                                 Toast.makeText(RegisterActivity.this,"Register Unsuccessful! Please Try Again",Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(RegisterActivity.this,RegisterActivity.class));
+                                inProgress(false);
+                                //startActivity(new Intent(RegisterActivity.this,RegisterActivity.class));
                             }
                             else {
+                                finish();
                                 Intent j =new Intent(RegisterActivity.this,MainActivity.class);
                                 startActivity(j);
                             }
@@ -91,6 +94,7 @@ public class RegisterActivity extends AppCompatActivity {
         warn2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                finish();
                 Intent i = new Intent(RegisterActivity.this,MainActivity.class);
                 startActivity(i);
             }

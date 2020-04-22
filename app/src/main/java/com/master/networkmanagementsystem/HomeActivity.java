@@ -1,11 +1,15 @@
 package com.master.networkmanagementsystem;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -13,7 +17,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,9 +33,11 @@ public class HomeActivity extends AppCompatActivity {
     TextView Humid,temp;
     DatabaseReference dref;
     String status;
+    ImageButton dectvtbtn;
     private long backPressedTime;
     private Toast backToast;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
+    ProgressDialog dialog;
 
 
     @Override
@@ -43,13 +52,41 @@ public class HomeActivity extends AppCompatActivity {
         Humid = findViewById(R.id.humid);
         temp = findViewById(R.id.tempdata);
         findbtn = findViewById(R.id.find);
+        dectvtbtn = findViewById(R.id.removeAccount);
+
+        dialog = new ProgressDialog(this);
 
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FirebaseAuth.getInstance().signOut();
+                finish();
                 Intent logouted = new Intent(HomeActivity.this, MainActivity.class);
                 startActivity(logouted);
+            }
+        });
+
+        dectvtbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if (user!=null){
+                    dialog.setMessage("Deactivating...Please Wait!");
+                    dialog.show();
+                    user.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()){
+                                Toast.makeText(getApplicationContext(),"Account Deactivated",Toast.LENGTH_LONG).show();
+                                finish();
+                                startActivity(new Intent(HomeActivity.this,RegisterActivity.class));
+                            }
+                            else{
+                                Toast.makeText(getApplicationContext(),"Deactivation Not Successful",Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                }
             }
         });
 
@@ -72,8 +109,25 @@ public class HomeActivity extends AppCompatActivity {
         terminal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent t = getPackageManager().getLaunchIntentForPackage("com.termux");//com.server.auditor.ssh.client
-                startActivity(t);
+                AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
+                builder.setMessage("For this facility you have to 'Termux Application' on your device. \nInstalled already?")
+                        .setPositiveButton("[Yes] \n Continue", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent t = getPackageManager().getLaunchIntentForPackage("com.termux");//com.server.auditor.ssh.client
+                        startActivity(t);
+                    }
+                }).setNegativeButton("[No] \n Download", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent myWebLink = new Intent(android.content.Intent.ACTION_VIEW);
+                        myWebLink.setData(Uri.parse("https://play.google.com/store/apps/details?id=com.termux&hl=en"));
+                        startActivity(myWebLink);
+                    }
+                });
+
+                AlertDialog alert = builder.create();
+                alert.show();
             }
         });
 
@@ -123,7 +177,7 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        if (backPressedTime + 10000 > System.currentTimeMillis()){
+        if (backPressedTime + 2700 > System.currentTimeMillis()){
             super.onBackPressed();
             return;
         }

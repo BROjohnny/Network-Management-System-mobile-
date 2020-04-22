@@ -21,7 +21,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class MainActivity extends AppCompatActivity {
     EditText email,password;
     Button register;
-    TextView warn;
+    TextView warn,reset;
     ProgressBar progressbar;
     FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
@@ -36,12 +36,14 @@ public class MainActivity extends AppCompatActivity {
         register = findViewById(R.id.register);
         warn = findViewById(R.id.warn);
         progressbar = findViewById(R.id.progressBar);
+        reset = findViewById(R.id.forgot);
 
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser mFirebaseUser = mFirebaseAuth.getCurrentUser();
                 if (mFirebaseUser != null){
+                    finish();
                     Toast.makeText(MainActivity.this,"You are logged in",Toast.LENGTH_SHORT).show();
                     Intent i = new Intent(MainActivity.this,HomeActivity.class);
                     startActivity(i);
@@ -74,13 +76,15 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (!task.isSuccessful()){
+                                inProgress(false);
                                 Toast.makeText(MainActivity.this,"Login Error,Check Email/Password",Toast.LENGTH_SHORT).show();
                             }
                             else {
+                                finish();
                                 Intent gohome = new Intent(MainActivity.this,HomeActivity.class);
-                                gohome.addFlags(gohome.FLAG_ACTIVITY_CLEAR_TOP);
+                                //gohome.addFlags(gohome.FLAG_ACTIVITY_CLEAR_TOP);
                                 startActivity(gohome);
-                                finish();return;
+                                //finish();return;
                             }
                         }
                     });
@@ -93,8 +97,18 @@ public class MainActivity extends AppCompatActivity {
         warn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                finish();
                 Intent j = new Intent(MainActivity.this, RegisterActivity.class);
                 startActivity(j);
+            }
+        });
+
+        reset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+                Intent r = new Intent(MainActivity.this, ForgotPasswordActivity.class);
+                startActivity(r);
             }
         });
     }
