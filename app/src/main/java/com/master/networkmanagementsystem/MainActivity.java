@@ -20,8 +20,8 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
     EditText email,password;
-    Button register;
-    TextView warn;
+    Button login;
+    TextView warn,reset;
     ProgressBar progressbar;
     FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
@@ -33,15 +33,17 @@ public class MainActivity extends AppCompatActivity {
         mFirebaseAuth = FirebaseAuth.getInstance();
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
-        register = findViewById(R.id.register);
+        login = findViewById(R.id.login);
         warn = findViewById(R.id.warn);
         progressbar = findViewById(R.id.progressBar);
+        reset = findViewById(R.id.forgot);
 
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser mFirebaseUser = mFirebaseAuth.getCurrentUser();
                 if (mFirebaseUser != null){
+                    finish();
                     Toast.makeText(MainActivity.this,"You are logged in",Toast.LENGTH_SHORT).show();
                     Intent i = new Intent(MainActivity.this,HomeActivity.class);
                     startActivity(i);
@@ -52,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
-        register.setOnClickListener(new View.OnClickListener() {
+        login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String emil = email.getText().toString();
@@ -61,26 +63,27 @@ public class MainActivity extends AppCompatActivity {
                     email.setError("Please enter email!");
                     email.requestFocus();
                 }
+
                 else if (pwd.isEmpty()){
                     password.setError("Please enter password");
                     password.requestFocus();
                 }
-//                else if (pwd.isEmpty() && emil.isEmpty()){
-//                    Toast.makeText(MainActivity.this,"Fields are empty!",Toast.LENGTH_SHORT).show();
-//                }
+
                 else if (!(pwd.isEmpty() && emil.isEmpty())){
                     inProgress(true);
                     mFirebaseAuth.signInWithEmailAndPassword(emil,pwd).addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (!task.isSuccessful()){
+                                inProgress(false);
                                 Toast.makeText(MainActivity.this,"Login Error,Check Email/Password",Toast.LENGTH_SHORT).show();
                             }
                             else {
+                                finish();
                                 Intent gohome = new Intent(MainActivity.this,HomeActivity.class);
-                                gohome.addFlags(gohome.FLAG_ACTIVITY_CLEAR_TOP);
+                                //gohome.addFlags(gohome.FLAG_ACTIVITY_CLEAR_TOP);
                                 startActivity(gohome);
-                                finish();return;
+                                //finish();return;
                             }
                         }
                     });
@@ -93,8 +96,18 @@ public class MainActivity extends AppCompatActivity {
         warn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                finish();
                 Intent j = new Intent(MainActivity.this, RegisterActivity.class);
                 startActivity(j);
+            }
+        });
+
+        reset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+                Intent r = new Intent(MainActivity.this, ForgotPasswordActivity.class);
+                startActivity(r);
             }
         });
     }
@@ -107,12 +120,12 @@ public class MainActivity extends AppCompatActivity {
     private void inProgress(boolean x){
         if (x){
             progressbar.setVisibility(View.VISIBLE);
-            register.setEnabled(false);
+            login.setEnabled(false);
             warn.setEnabled(false);
         }
         else {
             progressbar.setVisibility(View.INVISIBLE);
-            register.setEnabled(true);
+            login.setEnabled(true);
             warn.setEnabled(true);
         }
     }

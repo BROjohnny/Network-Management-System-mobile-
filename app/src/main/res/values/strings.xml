@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">Network Management System</string>
+    <string name="app_name">Remote Lab Operator</string>
+
+    <string name="app">APP</string>
+
+    <string name="openNav">Navigation Drawer Open</string>
+    <string name="closeNav">Navigation Drawer close</string>
 </resources>
